@@ -1,7 +1,14 @@
-const {Sequelize} = require('sequelize');
-const sequelize = new Sequelize('chatapp','root','Anjali@2001',{
-    dialect : 'mysql',
-    host : 'localhost'
-});
+const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
-module.exports= sequelize;
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+  }
+);
+
+module.exports = sequelize;

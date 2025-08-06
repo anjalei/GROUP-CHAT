@@ -5,12 +5,18 @@ const app = express();
 require('dotenv').config();
 const axios = require('axios');
 const cors = require('cors');
+
 const sequelize = require('./util/database');
 
 const userRoutes = require('./routes/signup');
 
 const User = require('./model/user');
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  methods: ['GET', 'POST'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')));
