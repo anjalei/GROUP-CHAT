@@ -1,3 +1,4 @@
+console.log("Signup JS loaded");
 document.getElementById('signupForm').addEventListener('submit', addUser);
 
 async function addUser(event) {

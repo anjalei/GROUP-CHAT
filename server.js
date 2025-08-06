@@ -8,12 +8,13 @@ const cors = require('cors');
 
 const sequelize = require('./util/database');
 
-const userRoutes = require('./routes/signup');
+const signUpRoutes = require('./routes/signup');
+const loginRoutes = require('./routes/login')
 
 const User = require('./model/user');
 
 app.use(cors({
-  origin: 'http://localhost:3000', 
+  origin: 'http://127.0.0.1:5500', 
   methods: ['GET', 'POST'],
   credentials: true,
 }));
@@ -21,7 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', userRoutes);
+app.use('/api', loginRoutes);
+app.use('api',loginRoutes)
 
 
 const port = 3000;
