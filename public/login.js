@@ -19,9 +19,8 @@ async function loginUser(event) {
 
         if (response.status === 200) {
             alert("Login successful!");
-            // Save token to localStorage (or cookie)
             localStorage.setItem("token", response.data.token);
-            window.location.href = "/chat.html"; // or wherever you want to redirect
+            window.location.href = "/chat.html"; 
         }
     } catch (error) {
         if (error.response && error.response.status === 401) {

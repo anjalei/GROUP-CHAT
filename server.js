@@ -22,8 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', loginRoutes);
-app.use('api',loginRoutes)
+app.use('/api',signUpRoutes);
+app.use('/api',loginRoutes)
 
 
 const port = 3000;

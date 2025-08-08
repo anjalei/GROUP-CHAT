@@ -18,7 +18,6 @@ async function addUser(event) {
             username, phone, email, password
         });
 
-        // Clear form fields
         document.getElementById("username").value = "";
         document.getElementById("phone").value = "";
         document.getElementById("email").value = "";
@@ -26,7 +25,8 @@ async function addUser(event) {
 
         if (response.status === 201) {
             alert("Successfully signed up!");
-            window.location.href = "/login.html";
+        window.location.href = "login.html";
+
         }
 
     } catch (error) {
