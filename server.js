@@ -9,9 +9,11 @@ const cors = require('cors');
 const sequelize = require('./util/database');
 
 const signUpRoutes = require('./routes/signup');
-const loginRoutes = require('./routes/login')
+const loginRoutes = require('./routes/login');
+const messageRoutes = require('./routes/message');
 
 const User = require('./model/user');
+const Message = require('./model/message');
 
 app.use(cors({
   origin: 'http://127.0.0.1:5500', 
@@ -23,7 +25,12 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api',signUpRoutes);
-app.use('/api',loginRoutes)
+app.use('/api',loginRoutes);
+app.use('/api',messageRoutes);
+
+User.hasMany(Message);
+Message.belongsTo(User);
+
 
 
 const port = 3000;

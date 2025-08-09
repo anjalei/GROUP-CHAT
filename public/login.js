@@ -3,8 +3,8 @@ document.getElementById('loginForm').addEventListener('submit', loginUser);
 async function loginUser(event) {
     event.preventDefault();
 
-    const email = document.getElementById('email')?.value;
-    const password = document.getElementById('password')?.value;
+    const email = document.getElementById('email')?.value.trim();
+    const password = document.getElementById('password')?.value.trim();
 
     if (!email || !password) {
         alert("Please fill in both email and password!");
@@ -17,12 +17,17 @@ async function loginUser(event) {
             password
         });
 
-        if (response.status === 200) {
-            alert("Login successful!");
+        if (response.status === 200 && response.data.token) {
             localStorage.setItem("token", response.data.token);
-            window.location.href = "/chat.html"; 
+            console.log("Token saved:", response.data.token);
+            alert("Login successful!");
+            window.location.href = "chat.html";
+        } else {
+            alert("No token received from server.");
         }
     } catch (error) {
+        console.error("Login error:", error);
+
         if (error.response && error.response.status === 401) {
             alert("Invalid credentials. Please try again.");
         } else {

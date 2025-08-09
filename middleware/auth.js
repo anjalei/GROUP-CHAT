@@ -15,6 +15,7 @@ const authenticateUser = async (req, res, next) => {
         if (!user) {
             return res.status(401).json({ error: 'User not found.' });
         }
+         console.log("JWT_SECRET in authenticateUser:", process.env.JWT_SECRET);
 
         req.user = user;
         next();

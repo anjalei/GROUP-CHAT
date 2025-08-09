@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background: linear-gradient(120deg, #89f7fe, #66a6ff);
+    background: linear-gradient(120deg, #89f7fe, #8ab8f9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,7 +20,7 @@ body {
 }
 
 header {
-    background: #4a90e2;
+    background: #64a5f0;
     color: white;
     padding: 15px;
     display: flex;
@@ -71,7 +71,7 @@ header {
 
 #messageForm button {
     padding: 10px 20px;
-    background: #4a90e2;
+    background: #3a5d85;
     color: white;
     border: none;
     cursor: pointer;
