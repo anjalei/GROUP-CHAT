@@ -1,109 +1,174 @@
-console.log("Chat JS loaded!");
+console.log('js loaded');
 
-const form = document.getElementById('messageForm');
-console.log("Form element found:", form);
+document.addEventListener("DOMContentLoaded", () => {
+    const createBtn = document.querySelector(".create-btn");
+    const groupList = document.getElementById("groupList");
+    const token = localStorage.getItem("token");
 
-if (form) {
-    form.addEventListener('submit', Message);
-} else {
-    console.error("❌ messageForm not found in DOM");
-}
+    const socket = io("http://localhost:3000");
+    socket.on("message", (msg) => {
+        showMessageOnScreen(msg);
+    });
 
-async function Message(event) {
-    event.preventDefault();
+    // Load groups
+    async function loadGroups() {
+        try {
+            const res = await axios.get("http://localhost:3000/group/fetch", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
 
-    try {
-        const token = localStorage.getItem('token');
-        const messageText = document.getElementById('messageInput').value.trim();
+            const groups = res.data.groups;
+            groupList.innerHTML = "";
 
-        if (!messageText) {
-            alert("Please enter a message!");
-            return;
+            groups.forEach(group => {
+                const li = document.createElement("li");
+                li.textContent = group.groupname;
+                li.dataset.groupId = group.id;
+
+                li.addEventListener("click", () => {
+                    joinGroup(group.id, group.groupname);
+                });
+
+                groupList.appendChild(li);
+            });
+        } catch (err) {
+            console.error("Could not load groups:", err);
         }
-
-        // Send message to backend
-        const res = await axios.post(
-            'http://localhost:3000/api/message',
-            { message: messageText },
-            { headers: { "Authorization": `Bearer ${token}` } }
-        );
-
-        document.getElementById('messageInput').value = ""; 
-
-        // Show message instantly in UI
-        const newMsg = {
-            name: res.data.name, // comes from backend
-            message: res.data.newMessage.message
-        };
-        showMessageonscreen(newMsg);
-
-        // Update localStorage with the new message
-        let storedMessages = JSON.parse(localStorage.getItem('Allmessages')) || [];
-        storedMessages.push(res.data.newMessage);
-        if (storedMessages.length > 10) {
-            storedMessages = storedMessages.slice(storedMessages.length - 10);
-        }
-        localStorage.setItem('Allmessages', JSON.stringify(storedMessages));
-
-    } catch (error) {
-        console.error(error);
-        alert("Error sending message!");
     }
-}
 
-async function fetchMessages(allMessages) {
-    try {
-        const chatBox = document.getElementById('messages');
-        chatBox.innerHTML = ''; 
+    // Create new group
+    createBtn.addEventListener("click", async () => {
+        const groupName = prompt("Enter Group Name:");
+        if (!groupName) return;
 
-        allMessages.forEach(msg => {
-            showMessageonscreen(msg);
-        });
+        try {
+            const res = await axios.post("http://localhost:3000/group/create",
+                { groupname: groupName },
+                { headers: { "Authorization": `Bearer ${token}` } }
+            );
 
-    } catch (err) {
-        console.error('Error fetching messages:', err);
-    }
-}
-
-function showMessageonscreen(user) {
-    const chatBox = document.getElementById('messages');
-    const childNode = `<li><strong>${user.name}:</strong> ${user.message}</li>`;
-    chatBox.innerHTML += childNode;
-}
-
-// Load messages on page load
-window.addEventListener('DOMContentLoaded', async () => {
-    let concatedArray;
-    const token = localStorage.getItem('token');
-    let message = JSON.parse(localStorage.getItem('Allmessages'));
-    let lastmessageid;
-
-    if (!message || message.length === 0) lastmessageid = 0;
-    else lastmessageid = message[message.length - 1].id;
-
-    try {
-        const res = await axios.get(
-            `http://localhost:3000/api/getmessages?lastmessageid=${lastmessageid}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        if (res.status === 202) {
-            const backendArray = res.data.allMessages;
-            if (!message || message.length === 0) {
-                concatedArray = [...backendArray];
-            } else {
-                concatedArray = message.concat(backendArray);
+            if (res.data.success) {
+                const li = document.createElement("li");
+                li.textContent = res.data.group.groupname;
+                li.dataset.groupId = res.data.group.id;
+                li.addEventListener("click", () => {
+                    joinGroup(res.data.group.id, res.data.group.groupname);
+                });
+                groupList.appendChild(li);
             }
-            if (concatedArray.length > 10) {
-                concatedArray = concatedArray.slice(concatedArray.length - 10);
-            }
-            localStorage.setItem('Allmessages', JSON.stringify(concatedArray));
-            fetchMessages(concatedArray);
+        } catch (err) {
+            console.error("Error creating group:", err);
+            alert("Failed to create group!");
         }
+    });
 
-    } catch (error) {
-        document.body.innerHTML += `<div style="color: red;text-align: center;">
-                                        <h3>${error}</h3>
-                                    </div>`;
+    // Send a new message
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+        const message = document.getElementById("msgInput").value;
+        const groupId = document.querySelector("#groupList li.active")?.dataset.groupId;
+
+        if (!groupId || !message) return;
+
+        try {
+            const res = await axios.post("http://localhost:3000/api/message", { message, groupId }, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            // Show the message immediately
+            if (res.data && res.data.newMessage) {
+                showMessageOnScreen({
+                    senderName: res.data.senderName,
+                    message: res.data.newMessage.message
+                });
+            }
+
+            document.getElementById("msgInput").value = "";
+        } catch (err) {
+            console.error("Failed to send message:", err);
+        }
+    });
+
+    // Join group
+    async function joinGroup(groupId, groupName) {
+        document.getElementById("groupName").textContent = groupName;
+        const detailsBtn = document.getElementById("groupDetailsBtn");
+        detailsBtn.style.display = "inline-block";
+        detailsBtn.dataset.groupId = groupId;
+
+        socket.emit("joinGroup", groupId);
+
+        document.querySelectorAll("#groupList li").forEach(li => li.classList.remove("active"));
+        const clicked = document.querySelector(`#groupList li[data-group-id="${groupId}"]`);
+        if (clicked) clicked.classList.add("active");
+
+        setupGroupDetailsButton(groupId);
+        loadChats(groupId);
     }
+
+    // Load chats
+    async function loadChats(groupId) {
+        try {
+            const res = await axios.get(`http://localhost:3000/api/getmessages/${groupId}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            const div = document.getElementById("messages");
+            div.innerHTML = "";
+
+            res.data.allGroupMessages.forEach(msg => showMessageOnScreen(msg));
+        } catch (err) {
+            console.error("Could not load messages:", err);
+        }
+    }
+
+    // Show message
+    function showMessageOnScreen(msg) {
+        const div = document.getElementById("messages");
+        if (!div) return;
+
+        const li = document.createElement("li");
+        li.textContent = `${msg.senderName || "Unknown"}: ${msg.message}`;
+        div.appendChild(li);
+        div.scrollTop = div.scrollHeight;
+    }
+
+    loadGroups();
 });
+
+// Setup details button
+function setupGroupDetailsButton(groupId) {
+    const detailsBtn = document.getElementById("groupDetailsBtn");
+    detailsBtn.style.display = "inline-block"; // make it visible
+
+    detailsBtn.onclick = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get(`http://localhost:3000/group/details/${groupId}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (res.data.success) {
+
+                let oldDetails = document.getElementById("groupDetails");
+                if (oldDetails) oldDetails.remove();
+
+                const detailsDiv = document.createElement("div");
+                detailsDiv.id = "groupDetails";
+                detailsDiv.style.border = "1px solid #ccc";
+                detailsDiv.style.padding = "5px";
+                detailsDiv.style.marginTop = "5px";
+
+                const memberNames = res.data.members.map(m => m.name).join(", ");
+                detailsDiv.innerHTML = `
+                    <strong>Admin:</strong> ${res.data.admin.name} <br>
+                    <strong>Members:</strong> ${memberNames}
+                `;
+
+                const chatHeader = document.getElementById("chatHeader");
+                chatHeader.after(detailsDiv);
+            }
+        } catch (err) {
+            console.error("Could not fetch group details:", err);
+        }
+    };
+}

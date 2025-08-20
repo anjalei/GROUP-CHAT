@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,24 +9,38 @@
 <body>
     <div class="container">
         <header>
-            <h1>Welcome to the Group Chat</h1>
-            <button id="logoutBtn">Logout</button>
+            <h1>Group Chat</h1>
+            <button id="logoutBtn" title="Logout">⎋</button>
         </header>
 
-        <div class="users-section">
-            <h2>Online Users</h2>
-            <ul id="userList"></ul>
-        </div> 
+        <main class="main-section">
+            
+            <aside class="group-section">
+                <div class="group-header">
+                    <h2>Groups</h2>
+                </div>
+                <div class="group-buttons">
+                    <button class="create-btn">➕ Create Group</button>
+                </div>
+                <ul id="groupList">
+                    
+                </ul>
+            </aside>
 
-        <div class="chat-section">
-            <div id="messages"></div>
-            <form id="messageForm">
-                <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off" />
-                <button type="submit">Send</button>
-            </form>
-        </div>
+            <section class="chat-section">
+                <div id="chatHeader" class="chat-header">
+        <h3 id="groupName">Select a Group</h3>
+        <button id="groupDetailsBtn" style="display:none;">Details</button>
+       </div> 
+                <div id="messages" class="messages"></div>
+               <div id="chatBox"></div>
+             <input id="msgInput" type="text" placeholder="Type message...">
+             <button id="sendBtn">Send</button>
+
+            </section>
+        </main>
     </div>
-
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="chat.js"></script>
 </body>

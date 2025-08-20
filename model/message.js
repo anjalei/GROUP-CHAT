@@ -12,7 +12,18 @@ const Message = sequelize.define('message', {
   message: {
     type: Sequelize.TEXT,
     allowNull: false
-  }
+  },
+  senderName: { 
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+ type: {
+  type: Sequelize.ENUM('text', 'multimedia'),
+  allowNull: false,
+  defaultValue : 'text'
+}
+
+
 });
 
 module.exports = Message;
