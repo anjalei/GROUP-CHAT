@@ -118,6 +118,7 @@ const getGroupDetails = async (req, res) => {
       include: [
         {
           model: User,
+          as: "members",
           through: { attributes: [] }, 
           attributes: ["id", "name"]
         }
@@ -134,7 +135,7 @@ const getGroupDetails = async (req, res) => {
     res.status(200).json({
       success: true,
       admin: admin,
-      members: group.users 
+      members: group.members
     });
   } catch (err) {
     console.error(err);

@@ -28,16 +28,25 @@
             </aside>
 
             <section class="chat-section">
-                <div id="chatHeader" class="chat-header">
-        <h3 id="groupName">Select a Group</h3>
-        <button id="groupDetailsBtn" style="display:none;">Details</button>
-       </div> 
-                <div id="messages" class="messages"></div>
-               <div id="chatBox"></div>
-             <input id="msgInput" type="text" placeholder="Type message...">
-             <button id="sendBtn">Send</button>
+  <div id="chatHeader" class="chat-header">
+    <h3 id="groupName">Select a Group</h3>
+    <button id="groupDetailsBtn" style="display:none;">Details</button>
 
-            </section>
+  
+    <div id="adminButtons" style="display:none; margin-top:5px;">
+      <button id="addMemberBtn">➕ Add Member</button>
+      <button id="removeMemberBtn">➖ Remove Member</button>
+      <button id="changeAdminBtn">👑 Change Admin</button>
+      <button id="deleteGroupBtn" style="color:red;">🗑 Delete Group</button>
+    </div>
+  </div>
+
+
+  <ul id="messages" class="messages"></ul>
+  <input id="msgInput" type="text" placeholder="Type message...">
+  <button id="sendBtn">Send</button>
+</section>
+
         </main>
     </div>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>

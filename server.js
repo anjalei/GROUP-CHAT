@@ -35,7 +35,7 @@ const GroupMember = require('./model/groupmember');
 
 app.use(cors({
   origin: 'http://127.0.0.1:5500', 
-  methods: ['GET', 'POST','DELETE','PUT'],
+  methods: ['GET', 'POST','DELETE','PATCH'],
   credentials: true,
 }));
 
@@ -55,8 +55,8 @@ Message.belongsTo(User);
 Group.hasMany(Message);
 Message.belongsTo(Group);
 
-Group.belongsToMany(User,{through:GroupMember});
-User.belongsToMany(Group,{through:GroupMember})
+Group.belongsToMany(User,{through:GroupMember,as: "members" });
+User.belongsToMany(Group,{through:GroupMember, as: "groups"})
 
 
 const port = 3000;
