@@ -34,7 +34,7 @@ const Group = require('./model/group');
 const GroupMember = require('./model/groupmember');
 
 app.use(cors({
-  origin: 'http://127.0.0.1:5500', 
+  origin: '*', 
   methods: ['GET', 'POST','DELETE','PATCH'],
   credentials: true,
 }));

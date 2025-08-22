@@ -43,12 +43,9 @@ const uploadFile=async(req,res,next)=>{
     const userName=req.user.name;
   
     try {
-       
- 
         const filename="File"+userId+"/"+Date.now()+Math.random();
-        console.log(filename);
         const fileUrl=await uploadToS3(req.file,filename);
-        await Message.create({groupId,userId,message:fileUrl,senderName:userName,type:'file'});
+        await Message.create({groupId,userId,message:fileUrl,senderName:userName,type:'multimedia'});
         const userFile={
             message:fileUrl,
             senderName:userName,
@@ -59,7 +56,7 @@ const uploadFile=async(req,res,next)=>{
   senderName: userName,
   groupId,
   userId,
-  type: "file"
+  type: "multimedia"
 });
 
         res.status(201).json({userFile,success:true})  
