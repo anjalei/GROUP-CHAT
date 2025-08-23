@@ -5,6 +5,7 @@ const app = express();
 require('dotenv').config();
 const axios = require('axios');
 const cors = require('cors');
+const cron = require("node-cron");
 const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server, { 
@@ -13,6 +14,7 @@ const io = socketIO(server, {
 module.exports = { io };
 const sequelize = require('./util/database');
 
+const startArchiver = require("./jobs/archiever");
 
 
 io.on("connection", (socket) => {
@@ -20,6 +22,7 @@ io.on("connection", (socket) => {
     socket.join(groupId);
   });
 });
+
 
 
 const signUpRoutes = require('./routes/signup');
@@ -32,6 +35,7 @@ const User = require('./model/user');
 const Message = require('./model/message');
 const Group = require('./model/group');
 const GroupMember = require('./model/groupmember');
+const ArchivedChat = require('./model/archievedChat');
 
 app.use(cors({
   origin: '*', 

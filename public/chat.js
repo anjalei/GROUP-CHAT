@@ -137,8 +137,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Join group
   async function joinGroup(groupId, groupName) {
     document.getElementById("groupName").textContent = groupName;
+
     const oldDetails = document.getElementById("groupDetails");
     if (oldDetails) oldDetails.remove();
+     const adminBtns = document.getElementById("adminButtons");
+if (adminBtns) adminBtns.style.display = "none";
     const detailsBtn = document.getElementById("groupDetailsBtn");
     detailsBtn.style.display = "inline-block";
     detailsBtn.dataset.groupId = groupId;
