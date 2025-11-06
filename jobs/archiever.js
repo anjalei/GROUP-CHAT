@@ -1,7 +1,7 @@
 const cron = require("node-cron");
 const  sequelize  = require("../util/database");
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 2 * * *", async () => {
   try {
     console.log("Archiving old messages...");
 

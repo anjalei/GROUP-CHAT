@@ -201,10 +201,35 @@ if (adminBtns) adminBtns.style.display = "none";
 
   loadGroups();
 
-  function setupGroupDetailsButton(groupId) {
-    const detailsBtn = document.getElementById("groupDetailsBtn");
-    detailsBtn.style.display = "inline-block";
-    detailsBtn.onclick = async () => {
+ function setupGroupDetailsButton(groupId) {
+  const detailsBtn = document.getElementById("groupDetailsBtn");
+  detailsBtn.style.display = "inline-block";
+  detailsBtn.textContent = "[+] Group Details"; 
+
+  let accordion = document.getElementById("groupDetails");
+  if (!accordion) {
+    accordion = document.createElement("div");
+    accordion.id = "groupDetails";
+    accordion.style.display = "none"; 
+    accordion.style.background = "#b5d1dfff";
+    accordion.style.padding = "10px";
+    accordion.style.marginTop = "10px";
+    document.getElementById("chatHeader").appendChild(accordion);
+  }
+
+  detailsBtn.addEventListener("click", async () => {
+    const isVisible = accordion.style.display === "block";
+
+   
+    accordion.style.display = isVisible ? "none" : "block";
+    detailsBtn.textContent = isVisible ? "[+] Group Details" : "[-] Hide Details";
+
+    if (isVisible && adminButtons) {
+      adminButtons.style.display = "none";
+      return;
+    }
+
+    if (!isVisible) {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
@@ -223,26 +248,19 @@ if (adminBtns) adminBtns.style.display = "none";
           document.getElementById("adminButtons").style.display = "none";
         }
 
-        const oldDetails = document.getElementById("groupDetails");
-        if (oldDetails) oldDetails.remove();
-
-        const detailsDiv = document.createElement("div");
-        detailsDiv.id = "groupDetails";
-        detailsDiv.style.background = "#b5d1dfff";
-        detailsDiv.style.padding = "10px";
-        detailsDiv.style.marginTop = "10px";
-        detailsDiv.innerHTML = `
-        <strong>Admin:</strong> ${admin.name}<br/>
-        <strong>Members:</strong>
-        <ul>${members.map((m) => `<li>${m.name}</li>`).join("")}</ul>
-      `;
-
-        document.getElementById("chatHeader").appendChild(detailsDiv);
+        
+        accordion.innerHTML = `
+          <strong>Admin:</strong> ${admin.name}<br/>
+          <strong>Members:</strong>
+          <ul>${members.map((m) => `<li>${m.name}</li>`).join("")}</ul>
+        `;
       } catch (err) {
         console.error("Could not fetch group details:", err);
       }
-    };
-  }
+    }
+  });
+}
+
 
   function getUserFromToken() {
     const token = localStorage.getItem("token");
@@ -279,6 +297,7 @@ if (adminBtns) adminBtns.style.display = "none";
         } else {
           alert("⚠️ " + res.data.msg);
         }
+        document.getElementById("groupDetailsBtn").click();
       } catch (err) {
         console.error("Error adding member:", err);
         alert("❌ Failed to add member. Check console.");

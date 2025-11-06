@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const http = require('http');
 const path = require('path');
 const app = express();
@@ -64,7 +64,8 @@ User.belongsToMany(Group,{through:GroupMember, as: "groups"})
 
 
 const port = 3000;
-sequelize.sync()
+sequelize
+.sync()
   .then(() => {
     server.listen(port, () => {
       console.log(`🚀 Server running on ${port}, sequelize connected`);
